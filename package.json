@@ -1,0 +1,8 @@
+{
+  "name": "graphql-boilerplate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:SujanBasnet-Outcode/graphql-boilerplate.git",
+  "author": "SujanBasnet-Outcode <sujan.basnet@outcodesoftware.com>",
+  "license": "MIT"
+}
