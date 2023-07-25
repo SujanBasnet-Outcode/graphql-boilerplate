@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { User } from 'src/models/user.model';
+import { User } from '../models/user.model';
 
-export interface Context {
-	user: User;
+export type Context = {
 	req: Request;
 	res: Response;
-}
+	user?: User;
+};
