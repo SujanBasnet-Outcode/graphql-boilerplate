@@ -1,6 +1,7 @@
 import { prop, getModelForClass, pre, ModelOptions, Severity } from '@typegoose/typegoose';
 import { ObjectType, Field } from 'type-graphql';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 @pre<User>('save', async function (next) {
 	if (this.isModified('password')) {
@@ -44,8 +45,23 @@ export class User {
 	@prop({ required: true })
 	updateAt!: Date;
 
+	@Field(() => String, { nullable: true })
+	@prop({ required: false, default: null })
+	resetPasswordToken?: string | null;
+
+	@Field(() => Date, { nullable: true })
+	@prop({ required: false, default: null })
+	resetPasswordExpires?: Date | null;
+
 	static async comparePasswords(hashedPassword: string, candidatePassword: string) {
 		return await bcrypt.compare(candidatePassword, hashedPassword);
+	}
+
+	static generateResetPasswordToken() {
+		// Generate random token
+		const resetToken = crypto.randomBytes(32).toString('hex');
+
+		return resetToken;
 	}
 }
 

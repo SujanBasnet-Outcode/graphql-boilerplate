@@ -12,7 +12,11 @@ export const customMessages = {
 	INVALID_EMAIL_OR_PASSWORD: 'Invalid email or password',
 	PASSWORD_TOO_SHORT: 'Password must be at least 8 characters long',
 	PASSWORD_TOO_LONG: 'Password must be at most 32 characters long',
+	RESET_PASSWORD_SUCCESS: 'Password reset successfully',
+	PASSWORDS_NOT_MATCH: 'Passwords do not match',
 
 	// Token Messages
-	INVALID_TOKEN: 'Invalid token'
+	INVALID_TOKEN: 'Invalid token',
+	RESET_TOKEN_INVALID: 'Reset token is invalid',
+	RESET_TOKEN_EXPIRED: 'Reset token has expired'
 };

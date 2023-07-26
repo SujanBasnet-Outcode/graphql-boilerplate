@@ -1,13 +1,7 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { IsEmail, MaxLength, MinLength } from 'class-validator';
+import { Equals, IsEmail, MaxLength, MinLength, ValidateIf } from 'class-validator';
 import { User } from '../models/user.model';
 import { customMessages } from '../constants/messages';
-
-@ObjectType()
-export class BaseResponse {
-	@Field(() => String)
-	status: string;
-}
 
 @InputType()
 export class SignUpInput {
@@ -40,18 +34,6 @@ export class LoginInput {
 }
 
 @ObjectType()
-export class UserResponse extends BaseResponse {
-	@Field(() => User)
-	user: User;
-}
-
-@ObjectType()
-export class UserListResponse extends BaseResponse {
-	@Field(() => [User])
-	users: User[];
-}
-
-@ObjectType()
 class LoginData {
 	@Field(() => String)
 	accessToken: string;
@@ -61,6 +43,26 @@ class LoginData {
 
 	@Field(() => User)
 	user: User;
+}
+
+@InputType()
+export class ResetPasswordInput {
+	@Field(() => String)
+	password: string;
+
+	@Field(() => String)
+	@ValidateIf((o) => o.password !== o.confirmPassword)
+	@Equals('password', { message: customMessages.PASSWORDS_NOT_MATCH })
+	confirmPassword: string;
+
+	@Field(() => String)
+	resetPasswordToken: string;
+}
+
+@ObjectType()
+export class BaseResponse {
+	@Field(() => String)
+	status: string;
 }
 
 @ObjectType()
@@ -73,4 +75,28 @@ export class LoginResponse extends BaseResponse {
 export class MeResponse extends BaseResponse {
 	@Field(() => User)
 	user: User;
+}
+
+@ObjectType()
+export class UserResponse extends BaseResponse {
+	@Field(() => User)
+	user: User;
+}
+
+@ObjectType()
+export class UserListResponse extends BaseResponse {
+	@Field(() => [User])
+	users: User[];
+}
+
+@ObjectType()
+export class ForgetPasswordResponse extends BaseResponse {
+	@Field(() => String)
+	message: string;
+}
+
+@ObjectType()
+export class ResetPasswordResponse extends BaseResponse {
+	@Field(() => String)
+	message: string;
 }

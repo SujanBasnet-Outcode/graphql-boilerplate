@@ -1,12 +1,16 @@
-import { Query, Resolver, Mutation, Arg } from 'type-graphql';
+import { Query, Resolver, Mutation, Arg, UseMiddleware, Ctx } from 'type-graphql';
 import UserService from '../services/user.service';
 import {
 	UserResponse,
 	SignUpInput,
 	UserListResponse,
 	LoginResponse,
-	LoginInput
+	LoginInput,
+	MeResponse,
+	ForgetPasswordResponse
 } from '../schemas/user.schema';
+import { Context } from '../types/Context';
+import { isAuth } from '../middleware/auth';
 
 @Resolver()
 export class UserResolver {
@@ -34,5 +38,18 @@ export class UserResolver {
 	async loginUser(@Arg('input') input: LoginInput) {
 		const data = await this.userService.loginUser(input);
 		return { status: 'success', data };
+	}
+
+	@Mutation(() => ForgetPasswordResponse)
+	async forgotPassword(@Arg('email') email: string) {
+		const message = await this.userService.forgotPassword(email);
+		return { status: 'success', message };
+	}
+
+	@Query(() => MeResponse)
+	@UseMiddleware(isAuth)
+	async Me(@Ctx() { user }: Context) {
+		const userExists = await this.userService.getMe(user!.id);
+		return { status: 'success', user: userExists };
 	}
 }

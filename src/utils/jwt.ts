@@ -35,7 +35,7 @@ export const signTokens = (user: User) => {
 	const payload: Payload = { userId, email: user.email };
 
 	const accessToken = createToken(payload, ACCESS_TOKEN_SECRET, { expiresIn: `60m` });
-	const refreshToken = createToken(payload, REFRESH_TOKEN_SECRET, { expiresIn: `7d` });
+	const refreshToken = createToken(payload, REFRESH_TOKEN_SECRET, { expiresIn: `2d` });
 
 	return { accessToken, refreshToken };
 };
