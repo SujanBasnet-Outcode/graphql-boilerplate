@@ -1,12 +1,25 @@
-import { Query, Resolver, Mutation, Arg } from 'type-graphql';
+import {
+	Query,
+	Resolver,
+	Mutation,
+	Arg,
+	UseMiddleware,
+	Ctx
+} from 'type-graphql';
 import UserService from '../services/user.service';
 import {
 	UserResponse,
 	SignUpInput,
 	UserListResponse,
 	LoginResponse,
-	LoginInput
+	LoginInput,
+	MeResponse,
+	ForgetPasswordResponse,
+	ResetPasswordInput,
+	ResetPasswordResponse
 } from '../schemas/user.schema';
+import { Context } from '../types/Context';
+import { isAuth } from '../middleware/auth';
 
 @Resolver()
 export class UserResolver {
@@ -15,13 +28,13 @@ export class UserResolver {
 	}
 
 	@Query(() => UserListResponse)
-	async getAllUsers() {
+	async getAllUsers(): Promise<UserListResponse> {
 		const users = await this.userService.getUsers();
 		return { status: 'success', users };
 	}
 
 	@Mutation(() => UserResponse)
-	async signUpUser(@Arg('input') input: SignUpInput) {
+	async signUpUser(@Arg('input') input: SignUpInput): Promise<UserResponse> {
 		const user = await this.userService.signUpUser({
 			...input,
 			createAt: new Date(),
@@ -31,8 +44,31 @@ export class UserResolver {
 	}
 
 	@Mutation(() => LoginResponse)
-	async loginUser(@Arg('input') input: LoginInput) {
+	async loginUser(@Arg('input') input: LoginInput): Promise<LoginResponse> {
 		const data = await this.userService.loginUser(input);
 		return { status: 'success', data };
+	}
+
+	@Mutation(() => ForgetPasswordResponse)
+	async forgotPassword(
+		@Arg('email') email: string
+	): Promise<ForgetPasswordResponse> {
+		const message = await this.userService.forgotPassword(email);
+		return { status: 'success', message };
+	}
+
+	@Mutation(() => ResetPasswordResponse)
+	async resetPassword(
+		@Arg('input') input: ResetPasswordInput
+	): Promise<ResetPasswordResponse> {
+		const message = await this.userService.resetPassword(input);
+		return { status: 'success', message };
+	}
+
+	@Query(() => MeResponse)
+	@UseMiddleware(isAuth)
+	async Me(@Ctx() { user }: Context): Promise<MeResponse> {
+		const userExists = await this.userService.getMe(user!.id);
+		return { status: 'success', user: userExists };
 	}
 }
