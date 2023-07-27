@@ -20,7 +20,10 @@ export const createToken = async (
 	return token;
 };
 
-export const verifyToken = async (token: string, secret: string): Promise<Payload | null> => {
+export const verifyToken = async (
+	token: string,
+	secret: string
+): Promise<Payload | null> => {
 	try {
 		const decoded = (await jwt.verify(token, secret)) as Payload;
 		return decoded;
@@ -30,12 +33,18 @@ export const verifyToken = async (token: string, secret: string): Promise<Payloa
 	}
 };
 
-export const signTokens = (user: User) => {
+export const signTokens = async (
+	user: User
+): Promise<Record<string, string>> => {
 	const userId: string = user.id.toString();
 	const payload: Payload = { userId, email: user.email };
 
-	const accessToken = createToken(payload, ACCESS_TOKEN_SECRET, { expiresIn: `60m` });
-	const refreshToken = createToken(payload, REFRESH_TOKEN_SECRET, { expiresIn: `2d` });
+	const accessToken = await createToken(payload, ACCESS_TOKEN_SECRET, {
+		expiresIn: `60m`
+	});
+	const refreshToken = await createToken(payload, REFRESH_TOKEN_SECRET, {
+		expiresIn: `2d`
+	});
 
 	return { accessToken, refreshToken };
 };

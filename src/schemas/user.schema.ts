@@ -1,16 +1,16 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { Equals, IsEmail, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import {
+	Equals,
+	IsEmail,
+	MaxLength,
+	MinLength,
+	ValidateIf
+} from 'class-validator';
 import { User } from '../models/user.model';
 import { customMessages } from '../constants/messages';
 
 @InputType()
-export class SignUpInput {
-	@Field(() => String)
-	firstName: string;
-
-	@Field(() => String)
-	lastName: string;
-
+export class UserInput {
 	@IsEmail()
 	@Field(() => String)
 	email: string;
@@ -22,19 +22,19 @@ export class SignUpInput {
 }
 
 @InputType()
-export class LoginInput {
-	@IsEmail()
+export class SignUpInput extends UserInput {
 	@Field(() => String)
-	email: string;
+	firstName: string;
 
-	@MinLength(8, { message: customMessages.INVALID_EMAIL_OR_PASSWORD })
-	@MaxLength(32, { message: customMessages.INVALID_EMAIL_OR_PASSWORD })
 	@Field(() => String)
-	password: string;
+	lastName: string;
 }
 
+@InputType()
+export class LoginInput extends UserInput {}
+
 @ObjectType()
-class LoginData {
+export class LoginData {
 	@Field(() => String)
 	accessToken: string;
 

@@ -1,4 +1,10 @@
-import { prop, getModelForClass, pre, ModelOptions, Severity } from '@typegoose/typegoose';
+import {
+	prop,
+	getModelForClass,
+	pre,
+	ModelOptions,
+	Severity
+} from '@typegoose/typegoose';
 import { ObjectType, Field } from 'type-graphql';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
@@ -53,11 +59,14 @@ export class User {
 	@prop({ required: false, default: null })
 	resetPasswordExpires?: Date | null;
 
-	static async comparePasswords(hashedPassword: string, candidatePassword: string) {
+	static async comparePasswords(
+		hashedPassword: string,
+		candidatePassword: string
+	): Promise<boolean> {
 		return await bcrypt.compare(candidatePassword, hashedPassword);
 	}
 
-	static generateResetPasswordToken() {
+	static generateResetPasswordToken(): string {
 		// Generate random token
 		const resetToken = crypto.randomBytes(32).toString('hex');
 
