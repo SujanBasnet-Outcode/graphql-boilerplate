@@ -59,6 +59,20 @@ export class ResetPasswordInput {
 	resetPasswordToken: string;
 }
 
+@InputType()
+export class ChangePasswordInput {
+	@Field(() => String)
+	oldPassword: string;
+
+	@Field(() => String)
+	newPassword: string;
+
+	@Field(() => String)
+	@ValidateIf((o) => o.newPassword !== o.confirmPassword)
+	@Equals('newPassword', { message: customMessages.PASSWORDS_NOT_MATCH })
+	confirmPassword: string;
+}
+
 @ObjectType()
 export class BaseResponse {
 	@Field(() => String)
@@ -97,6 +111,12 @@ export class ForgetPasswordResponse extends BaseResponse {
 
 @ObjectType()
 export class ResetPasswordResponse extends BaseResponse {
+	@Field(() => String)
+	message: string;
+}
+
+@ObjectType()
+export class ChangePasswordResponse extends BaseResponse {
 	@Field(() => String)
 	message: string;
 }
