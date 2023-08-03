@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build && node dist/server.js",
     "build": "rimraf dist && tsc",
-    "start:dev": "npx nodemon",
+    "start:dev": "./nvm.sh && npx nodemon",
     "prettify": " echo \"Using prettier to reformat the code\" && prettier --config .prettierrc 'src/**/*.ts' --write",
     "lint": "echo \"Eslint finding linting issues in the code.\" && eslint --ignore-path  .eslintignore  --ext .js,.ts .",
     "prepare": "husky install"
