@@ -18,5 +18,10 @@ export const customMessages = {
 	// Token Messages
 	INVALID_TOKEN: 'Invalid token',
 	RESET_TOKEN_INVALID: 'Reset token is invalid',
-	RESET_TOKEN_EXPIRED: 'Reset token has expired'
+	RESET_TOKEN_EXPIRED: 'Reset token has expired',
+
+	// Change Password
+	CHANGE_PASSWORD_SUCCESS: 'Password changed successfully',
+	CHANGE_PASSWORD_FAILED: 'Password change failed',
+	CHANGE_PASSWORD_INVALID: 'Password change invalid password'
 };

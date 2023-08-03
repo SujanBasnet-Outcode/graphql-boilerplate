@@ -16,7 +16,9 @@ import {
 	MeResponse,
 	ForgetPasswordResponse,
 	ResetPasswordInput,
-	ResetPasswordResponse
+	ResetPasswordResponse,
+	ChangePasswordResponse,
+	ChangePasswordInput
 } from '../schemas/user.schema';
 import { Context } from '../types/Context';
 import { isAuth } from '../middleware/auth';
@@ -70,5 +72,15 @@ export class UserResolver {
 	async Me(@Ctx() { user }: Context): Promise<MeResponse> {
 		const userExists = await this.userService.getMe(user!.id);
 		return { status: 'success', user: userExists };
+	}
+
+	@Query(() => ChangePasswordResponse)
+	@UseMiddleware(isAuth)
+	async changePassword(
+		@Arg('input') input: ChangePasswordInput,
+		@Ctx() { user }: Context
+	): Promise<ChangePasswordResponse> {
+		const message = await this.userService.changePassword(input, user!.id);
+		return { status: 'success', message };
 	}
 }

@@ -1,5 +1,6 @@
 import { ValidationError, AuthenticationError } from 'apollo-server-core';
 import {
+	ChangePasswordInput,
 	LoginData,
 	LoginInput,
 	ResetPasswordInput
@@ -103,7 +104,8 @@ export default class UserService {
 			const user = await this.getUserProfile({ resetPasswordToken });
 
 			// 2. Check if token has expired
-			if (user.resetPasswordExpires! < new Date(Date.now())) {
+			const hasTokenExpired = user.resetPasswordExpires! < new Date(Date.now());
+			if (hasTokenExpired) {
 				throw new AuthenticationError(customMessages.RESET_TOKEN_EXPIRED);
 			}
 
@@ -114,6 +116,30 @@ export default class UserService {
 			await user.save();
 
 			return customMessages.RESET_PASSWORD_SUCCESS;
+		} catch (err: any) {
+			console.log(err);
+			throw err;
+		}
+	}
+
+	async changePassword(
+		{ oldPassword, newPassword }: ChangePasswordInput,
+		userId: string
+	): Promise<string> {
+		try {
+			const user = await this.getUserProfile({ id: userId });
+
+			const passwordsMatch = await UserModel.comparePasswords(
+				user.password,
+				oldPassword
+			);
+			if (!passwordsMatch)
+				throw new AuthenticationError(customMessages.CHANGE_PASSWORD_INVALID);
+
+			user.password = newPassword;
+			await user.save();
+
+			return customMessages.CHANGE_PASSWORD_SUCCESS;
 		} catch (err: any) {
 			console.log(err);
 			throw err;
