@@ -36,13 +36,13 @@ export class LoginInput extends UserInput {}
 @ObjectType()
 export class LoginData {
 	@Field(() => String)
-	accessToken: string;
+	accessToken?: string;
 
 	@Field(() => String)
-	refreshToken: string;
+	refreshToken?: string;
 
 	@Field(() => User)
-	user: User;
+	user?: User;
 }
 
 @InputType()
@@ -71,6 +71,15 @@ export class ChangePasswordInput {
 	@ValidateIf((o) => o.newPassword !== o.confirmPassword)
 	@Equals('newPassword', { message: customMessages.PASSWORDS_NOT_MATCH })
 	confirmPassword: string;
+}
+
+@InputType()
+export class UpdateUserInput {
+	@Field(() => String, { nullable: true })
+	firstName?: string;
+
+	@Field(() => String, { nullable: true })
+	lastName?: string;
 }
 
 @ObjectType()

@@ -18,7 +18,8 @@ import {
 	ResetPasswordInput,
 	ResetPasswordResponse,
 	ChangePasswordResponse,
-	ChangePasswordInput
+	ChangePasswordInput,
+	UpdateUserInput
 } from '../schemas/user.schema';
 import { Context } from '../types/Context';
 import { isAuth } from '../middleware/auth';
@@ -82,5 +83,22 @@ export class UserResolver {
 	): Promise<ChangePasswordResponse> {
 		const message = await this.userService.changePassword(input, user!.id);
 		return { status: 'success', message };
+	}
+
+	@Query(() => UserResponse)
+	@UseMiddleware(isAuth)
+	async getUser(@Arg('id') id: string): Promise<UserResponse> {
+		const user = await this.userService.getUser(id);
+		return { status: 'success', user };
+	}
+
+	@Mutation(() => UserResponse)
+	@UseMiddleware(isAuth)
+	async updateUser(
+		@Arg('id') id: string,
+		@Arg('input') input: UpdateUserInput
+	): Promise<UserResponse> {
+		const user = await this.userService.updateUser(id, input);
+		return { status: 'success', user };
 	}
 }
