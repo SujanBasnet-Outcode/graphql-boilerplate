@@ -21,10 +21,42 @@ export default class UserService {
 		return user;
 	}
 
+	async getUserProfileWithPassword(condition: Partial<User>) {
+		const user = await UserRepository.findOne(condition, '+password');
+
+		if (!user) {
+			throw new AuthenticationError(customMessages.USER_NOT_FOUND);
+		}
+
+		return user;
+	}
+
 	async getUsers(): Promise<User[]> {
 		try {
 			const users: User[] = await UserRepository.findAll({});
 			return users;
+		} catch (err: any) {
+			console.log(err);
+			throw err;
+		}
+	}
+
+	async getUser(id: string): Promise<User> {
+		try {
+			const user = await UserRepository.findById(id);
+			if (!user) throw new AuthenticationError(customMessages.USER_NOT_FOUND);
+			return user;
+		} catch (err: any) {
+			console.log(err);
+			throw err;
+		}
+	}
+
+	async updateUser(id: string, userCredentials: Partial<User>): Promise<User> {
+		try {
+			const user = await UserRepository.findByIdAndUpdate(id, userCredentials);
+			if (!user) throw new AuthenticationError(customMessages.USER_NOT_FOUND);
+			return user;
 		} catch (err: any) {
 			console.log(err);
 			throw err;
@@ -47,8 +79,7 @@ export default class UserService {
 	async loginUser(input: LoginInput): Promise<LoginData> {
 		const { email, password } = input;
 		try {
-			const user = await this.getUserProfile({ email });
-
+			const user = await this.getUserProfileWithPassword({ email });
 			const passwordsMatch = await UserModel.comparePasswords(
 				user.password,
 				password
@@ -101,7 +132,9 @@ export default class UserService {
 		resetPasswordToken
 	}: ResetPasswordInput): Promise<string> {
 		try {
-			const user = await this.getUserProfile({ resetPasswordToken });
+			const user = await this.getUserProfileWithPassword({
+				resetPasswordToken
+			});
 
 			// 2. Check if token has expired
 			const hasTokenExpired = user.resetPasswordExpires! < new Date(Date.now());
@@ -127,7 +160,7 @@ export default class UserService {
 		userId: string
 	): Promise<string> {
 		try {
-			const user = await this.getUserProfile({ id: userId });
+			const user = await this.getUserProfileWithPassword({ id: userId });
 
 			const passwordsMatch = await UserModel.comparePasswords(
 				user.password,

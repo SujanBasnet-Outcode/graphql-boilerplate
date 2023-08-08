@@ -10,7 +10,7 @@ export class BaseRepository<T> {
 
 	async findAll(
 		conditions: Partial<T>,
-		projection?: ProjectionType<T>,
+		projection?: ProjectionType<T> | string,
 		options?: QueryOptions
 	) {
 		const query = await this.model.find(conditions, projection, options);
