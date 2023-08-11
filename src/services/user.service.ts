@@ -9,6 +9,7 @@ import { signTokens } from '../utils/jwt';
 import { customMessages } from '../constants/messages';
 import UserRepository from '../repositories/user.repository';
 import UserModel, { User } from '../models/user.model';
+import { sendEmail } from '../utils/email';
 
 export default class UserService {
 	async getUserProfile(condition: Partial<User>) {
@@ -120,6 +121,13 @@ export default class UserService {
 
 			// need to send this token to user's email future work
 			const message = `Use this as a resetPasswordToken: ${resetToken}`;
+
+			sendEmail({
+				to: 'sujanbasnet5426@gmail.com',
+				subject: 'Reset Password',
+				text: message,
+				html: `<p>${message}</p>`
+			});
 			return message;
 		} catch (err: any) {
 			console.log(err);
