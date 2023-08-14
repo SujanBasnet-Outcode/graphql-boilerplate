@@ -10,15 +10,18 @@ import { User } from '../models/user.model';
 import { customMessages } from '../constants/messages';
 
 @InputType()
-export class UserInput {
-	@IsEmail()
-	@Field(() => String)
-	email: string;
-
+class PasswordInput {
 	@MinLength(8, { message: customMessages.PASSWORD_TOO_SHORT })
 	@MaxLength(32, { message: customMessages.PASSWORD_TOO_LONG })
 	@Field(() => String)
 	password: string;
+}
+
+@InputType()
+export class UserInput extends PasswordInput {
+	@IsEmail()
+	@Field(() => String)
+	email: string;
 }
 
 @InputType()
@@ -46,10 +49,7 @@ export class LoginData {
 }
 
 @InputType()
-export class ResetPasswordInput {
-	@Field(() => String)
-	password: string;
-
+export class ResetPasswordInput extends PasswordInput {
 	@Field(() => String)
 	@ValidateIf((o) => o.password !== o.confirmPassword)
 	@Equals('password', { message: customMessages.PASSWORDS_NOT_MATCH })
@@ -60,17 +60,12 @@ export class ResetPasswordInput {
 }
 
 @InputType()
-export class ChangePasswordInput {
+export class ChangePasswordInput extends ResetPasswordInput {
 	@Field(() => String)
 	oldPassword: string;
 
 	@Field(() => String)
 	newPassword: string;
-
-	@Field(() => String)
-	@ValidateIf((o) => o.newPassword !== o.confirmPassword)
-	@Equals('newPassword', { message: customMessages.PASSWORDS_NOT_MATCH })
-	confirmPassword: string;
 }
 
 @InputType()

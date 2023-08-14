@@ -10,26 +10,31 @@ import app, { corsOptions } from './app';
 import { resolvers } from './resolvers';
 import { connect } from './db/dbConnection';
 
-async function startApolloServer() {
-	// Load environment variables
-	dotenv.config();
+async function createHttpServer(app: Express.Application) {
+	return http.createServer(app);
+}
 
-	const httpServer = http.createServer(app);
-
+async function createApolloServer(httpServer: http.Server) {
 	const schema = await buildSchema({
 		resolvers,
 		dateScalarMode: 'isoDate'
 	});
 
-	const server = new ApolloServer({
+	return new ApolloServer({
 		schema,
 		plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 		context: ({ req, res }) => ({ req, res }),
-		introspection: true
+		introspection: true,
+		debug: process.env.NODE_ENV !== 'production', // Enable detailed debug logs in non-production environments
+		formatError: (err) => {
+			console.error(err); // Log errors
+			return err;
+		}
 	});
+}
 
+async function startServer(server: ApolloServer, httpServer: http.Server) {
 	await server.start();
-
 	server.applyMiddleware({ app, cors: corsOptions });
 
 	const port = process.env.PORT || 4000;
@@ -41,6 +46,15 @@ async function startApolloServer() {
 			resolve();
 		});
 	});
+}
+
+async function startApolloServer() {
+	dotenv.config();
+
+	const httpServer = await createHttpServer(app);
+	const server = await createApolloServer(httpServer);
+
+	await startServer(server, httpServer);
 
 	connect();
 
