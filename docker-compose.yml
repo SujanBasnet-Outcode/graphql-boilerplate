@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongodb_data:/data/db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: graphql-boilerplate
+    ports:
+      - "4300:4300"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://root:root@mongodb:27017
+
+volumes:
+  mongodb_data:

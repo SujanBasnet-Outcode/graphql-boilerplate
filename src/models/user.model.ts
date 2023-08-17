@@ -6,7 +6,7 @@ import {
 	Severity
 } from '@typegoose/typegoose';
 import { ObjectType, Field } from 'type-graphql';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 @pre<User>('save', async function (next) {
